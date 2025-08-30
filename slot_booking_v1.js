@@ -1,8 +1,11 @@
-let availabilty=[
+const moment = require('moment');
 
-    {"date":"2025-08-25","day":"Mon","slots":[
-        {"slotId":"","start":"","end":"","status":"A"}
-    ]
+let availabilty = [
+
+    {
+        "date": "2025-08-25", "day": "Mon", "slots": [
+            { "slotId": "", "start": "", "end": "", "status": "A" }
+        ]
     }
 ]
 
@@ -20,24 +23,25 @@ let reservedList = [
     }
 ]
 
-const  serviceRules= [{
+const serviceRules = [{
 
-        "serviceId": "20001",
-        "generationDurationType": "D",
-        "generationDuration": "45",
-        "serviceStartTime": "09:00",
-        "serviceDurationType": "F",
-        "serviceDuration": "30",
-        "serviceEndTime": "9:30",
-        "operatingDays": [
-            { "day": "Mon", "start": "*", "end": "*" },
-            { "day": "Wed", "start": "*", "end": "*" },
-            { "day": "Fri", "start": "*", "end": "*" }
-        ], 
-        "serviceGapTimeType": "M",
-        "serviceGapTime": "10"
+    "serviceId": "20001",
+    "generationDurationType": "D",
+    "generationDuration": "45",
+    "serviceStartTime": "09:00",
+    "serviceDurationType": "F",
+    "serviceDuration": "30",
+    "serviceEndTime": "9:30",
+    "operatingDays": [
+        { "day": "Mon", "start": "*", "end": "*" },
+        { "day": "Wed", "start": "*", "end": "*" },
+        { "day": "Fri", "start": "*", "end": "*" }
+    ],
+    "serviceGapTimeType": "M",
+    "serviceGapTime": "10"
 
-    }]
+}]
+
 // let input = {
 //     "serviceSlot": [
 //         {
@@ -123,20 +127,69 @@ const  serviceRules= [{
 
 // slotGenerator(input);
 
-function getService(serviceId){
- // this should be a get api which read the database for a service , which has the serviceid matching same as the parameter of getservice()
- return serviceRules[0];
+//function to get the service details using service id
+function getService(serviceId) {
+    // this should be a get api which read the database for a service , which has the serviceid matching same as the parameter of getservice()
+    return serviceRules[0];
 }
 
-function generateSlot(serviceRules) {
+//checks if the input date is today, tommorow or the future days
+const checkDate = (inputDate) => {
+    const today = moment().startOf("day");
+    const givenDate = moment(inputDate).startOf("day")
+
+    if (givenDate.isBefore(today)) {
+        return "past";
+    } else if (givenDate.isSame(today)) {
+        return "today";
+    } else if (givenDate.isAfter(today)) {
+        return "future";
+    }
+}
+
+//function to generate a slot for using the service rule and inputdate.
+function generateSlot(serviceRules, inputDate) {
+    // take the serviceRules.operatingDays, start & end time, duration , gap and service duration
+    const operatingDays = serviceRules.operatingDays;
+    const serviceStartTime = serviceRules.serviceStartTime;
+    const serviceEndTime = serviceRules.serviceEndTime;
+    const serviceDuration = serviceRules.serviceDuration;
+    const generationDuration = serviceRules.generationDuration;
+
+    const checkedDate = checkDate(inputDate)
+    // iterate through the operating days array
+
+    operatingDays.forEach(element => {
+        console.log(element.day);
+    });
+
+    console.log(" the input date is on ::" + checkedDate);
+    // loop through it,  
+}
+
+// function to generate service availability
+function generateServiceAvilability(serviceId, inputDate) {
+
+    try {
+        // function for checking inputDate is on past or not
+        const checkedDate = checkDate(inputDate)
+
+        // first check if the date is on past or not, stop the program if the input date is on past
+        if (checkedDate === "past") {
+
+            throw new Error("not a valid date")
+        } else {
+
+            // continue program if the input date is not on past
+            let serviceRules = getService(serviceId);
+            let slot = generateSlot(serviceRules, inputDate);
+        }
+
+    } catch (error) {
+        console.log("Error Found::" + error);
+    }
 
 }
 
-function generateServiceAvilability(serviceId,inputDate){
-   let serviceRules= getService(serviceId);
-   console.log(serviceRules);
-   let slot = generateSlot(serviceRules);
-}
-
-/// starting point
-generateServiceAvilability("20001","2025-09-01")
+/// starting point (main function) of the program
+generateServiceAvilability("20001", "2025-08-30");
