@@ -63,6 +63,7 @@ function generateSlotsForService(serviceRules, inputDate) {
     const status = checkDate(inputDate);
 
     if (status === "past") {
+
         throw new Error("Date is invalid. please choose today or a future date.")
     }
     let startDate = moment(inputDate, "YYYY-MM-DD").startOf("day");
@@ -86,7 +87,7 @@ function generateSlotsForService(serviceRules, inputDate) {
                     end: slotEnd.format("HH:mm"),
                     status: "A"
                 };
-                console.log("this is slotObj array" + slotObj);
+                // console.log("this is slotObj array" + slotObj);
 
                 // check against booked/reserved
                 if (bookedList.some(b => b.date === d.format("YYYY-MM-DD") && b.start === slotObj.start && b.end === slotObj.end)) {
@@ -101,23 +102,21 @@ function generateSlotsForService(serviceRules, inputDate) {
                     day: dayName,
                     slots: [slotObj]
                 });
-
             }
-
-
         });
-
     }
     // console.log("this is availability array" + availability);
     return availability;
-
 }
 
 // function to generate service availability
 function generateServiceAvilability(serviceId, inputDate) {
 
     try {
-
+        const status = checkDate(inputDate);
+        if (status === "past") {
+            throw new Error("Date is invalid. please choose today or a future date.")
+        }
         // continue program if the input date is not on past
         let serviceRules = getService(serviceId);
         let Slots = generateSlotsForService(serviceRules, inputDate);
@@ -126,7 +125,6 @@ function generateServiceAvilability(serviceId, inputDate) {
 
         console.log("Error Found::" + error);
     }
-
 }
 
 /// starting point (main function) of the program
